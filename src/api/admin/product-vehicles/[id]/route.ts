@@ -2,6 +2,7 @@ import { MedusaRequest, MedusaResponse } from "@medusajs/medusa";
 
 import VehicleProductsService from "../../../../services/vehicle-products";
 import VehicleService from "src/services/vehicle";
+import { VehicleDTO } from "src/types/vehicle";
 
 export async function GET(
   req: MedusaRequest,
@@ -20,7 +21,7 @@ export async function GET(
 
     const vehicles = await vehicleService.findManyByIds(vehicleIds);
 
-    vehicles.forEach((vehicle) => {
+    vehicles.forEach((vehicle: VehicleDTO) => {
       vehicle.vehicle_product_id = vehicleProductsIds.find(
         (vp) => vp.vehicle_id === vehicle.id
       ).id;

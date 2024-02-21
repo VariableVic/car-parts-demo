@@ -1,6 +1,7 @@
-import { EntityManager } from "typeorm";
+import { EntityManager, In } from "typeorm";
 import { SharedContext } from "@medusajs/types";
 import { VehicleProducts } from "../models/vehicle-products";
+import QueryString from "qs";
 
 type InjectedDependencies = {
   manager: EntityManager;
@@ -33,16 +34,29 @@ export default class VehicleProductsService {
   }
 
   async retrieveProductsByVehicleId(
-    vehicle_id: string,
+    vehicle_id:
+      | string
+      | QueryString.ParsedQs
+      | string[]
+      | QueryString.ParsedQs[],
     context?: SharedContext
   ): Promise<{ id: string; product_id: string }[]> {
     const vehicleProductsRepo =
       this.getManager(context).getRepository(VehicleProducts);
     const vehicleProducts = await vehicleProductsRepo.find({
-      where: { vehicle_id },
+      where: {
+        vehicle_id: In(Array.isArray(vehicle_id) ? vehicle_id : [vehicle_id]),
+      },
     });
 
-    return vehicleProducts.map((vp) => ({
+    const uniqueVehicleProducts = vehicleProducts.reduce((acc, vp) => {
+      if (!acc.find((v) => v.product_id === vp.product_id)) {
+        acc.push(vp);
+      }
+      return acc;
+    }, [] as VehicleProducts[]);
+
+    return uniqueVehicleProducts.map((vp) => ({
       id: vp.id,
       product_id: vp.product_id,
     }));

@@ -12,8 +12,6 @@ export class Vehicle extends BaseEntity {
   @Column()
   year: number;
 
-  vehicle_product_id: string;
-
   @BeforeInsert()
   private beforeInsert(): void {
     this.id = generateEntityId(this.id, "vehicle");

@@ -1,46 +1,58 @@
-// import type { MiddlewaresConfig } from "@medusajs/medusa";
-// import type {
-//   MedusaNextFunction,
-//   MedusaRequest,
-//   MedusaResponse,
-// } from "@medusajs/medusa";
+import type { MiddlewaresConfig } from "@medusajs/medusa";
+import type {
+  MedusaNextFunction,
+  MedusaRequest,
+  MedusaResponse,
+} from "@medusajs/medusa";
+import VehicleProductsService from "../services/vehicle-products";
 
-// const vehicleProductsMiddleware = async (
-//   req: MedusaRequest,
-//   res: MedusaResponse,
-//   next: MedusaNextFunction
-// ) => {
-//   const productId = req.params["0"];
-//   if (!productId.includes("prod_")) {
-//     next();
-//   }
+const vehicleProductsMiddleware = async (
+  req: MedusaRequest,
+  res: MedusaResponse,
+  next: MedusaNextFunction
+) => {
+  // get vehicleProductsService from scope
+  const vehicleProductsService = req.scope.resolve<VehicleProductsService>(
+    "vehicleProductsService"
+  );
 
-//   const vehicleProductsService = req.scope.resolve("vehicleProductsService");
-//   const productService = req.scope.resolve("productService");
+  // get vehicle_id from query
+  const vehicle_id = req.query.vehicle_id || req.query["vehicle_id[]"];
 
-//   try {
-//     const vehicles = await vehicleProductsService.retrieveVehiclesByProductId(
-//       productId
-//     );
-//     const product = await productService.retrieve(productId);
+  if (!vehicle_id) {
+    next();
+    return;
+  }
 
-//     product.vehicles = vehicles;
+  // remove vehicle_id from query, as the next middleware will not expect it
+  delete req.query.vehicle_id;
 
-//     console.log({ product });
+  // remove all query params from url
+  const newUrl = req.url.split("?")[0];
+  req.url = newUrl;
 
-//     res.status(200).json({ product });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error });
-//   }
-// };
+  // get vehicle products
+  const vehicleProds = await vehicleProductsService.retrieveProductsByVehicleId(
+    vehicle_id
+  );
 
-// export const config: MiddlewaresConfig = {
-//   routes: [
-//     {
-//       matcher: "/admin/products/*",
-//       middlewares: [vehicleProductsMiddleware],
-//       method: "GET",
-//     },
-//   ],
-// };
+  // add vehicle products to query
+  req.query = {
+    ...req.query,
+    id: vehicleProds.map((vp) => vp.product_id),
+  };
+
+  // call next middleware
+  next();
+  return;
+};
+
+export const config: MiddlewaresConfig = {
+  routes: [
+    {
+      matcher: "/store/products",
+      middlewares: [vehicleProductsMiddleware],
+      method: "GET",
+    },
+  ],
+};

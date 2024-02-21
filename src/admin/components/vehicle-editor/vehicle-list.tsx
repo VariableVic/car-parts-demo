@@ -1,5 +1,4 @@
 import { Table } from "@medusajs/ui";
-import { useAdminCustomQuery } from "medusa-react";
 import { DeleteVehicle } from "./delete-vehicle";
 import { EditVehicle } from "./edit-vehicle";
 

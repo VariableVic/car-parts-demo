@@ -1,7 +1,7 @@
 import { Button } from "@medusajs/ui";
 import { useAdminCustomDelete } from "medusa-react";
 
-import { Vehicle } from "../../../models/vehicle";
+import { VehicleDTO } from "src/types/vehicle";
 
 export function DeleteVehicle({
   page = "settings",
@@ -9,7 +9,7 @@ export function DeleteVehicle({
   refetch,
 }: {
   page: "settings" | "products";
-  vehicle: Vehicle;
+  vehicle: VehicleDTO;
   refetch: () => void;
 }) {
   const endpoint =

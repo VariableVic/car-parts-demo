@@ -5,7 +5,6 @@ import { useAdminCustomQuery } from "medusa-react";
 import { Container } from "../components/shared/container";
 import { VehicleSelect } from "../components/vehicle-selector/select";
 import { Vehicle } from "../../models/vehicle";
-import VehicleBadge from "../components/vehicle-selector/vehicle-badge";
 import { VehicleList } from "../components/vehicle-editor/vehicle-list";
 
 type InjectedProps = WidgetProps & {
@@ -51,19 +50,6 @@ const ProductVehicleEditor = (props: InjectedProps) => {
             page="products"
           />
         ) : (
-          // <>
-          //   <p className="inter-base-semibold mb-4">Linked vehicles:</p>
-          //   <ul className="flex gap-2 flex-wrap">
-          //     {linkedVehicles.map((v) => (
-          //       <li key={v.vehicle_product_id}>
-          //         <VehicleBadge
-          //           vehicle={v}
-          //           refetchLinkedVehicles={refetchLinkedVehicles}
-          //         />
-          //       </li>
-          //     ))}{" "}
-          //   </ul>
-          // </>
           <p>No vehicles linked.</p>
         )}
       </div>
