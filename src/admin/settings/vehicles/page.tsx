@@ -13,7 +13,7 @@ const VehicleSettings = () => {
   return (
     <Container title="Vehicles" description="Manage your vehicles">
       <div className="flex justify-end my-6">
-        <CreateVehicle />
+        <CreateVehicle refetch={refetch} />
       </div>
       <VehicleList
         data={data}

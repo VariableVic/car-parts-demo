@@ -29,21 +29,7 @@ export const VehicleSelect = ({
       return acc;
     }, {});
 
-    // Sort brands alphabetically
-    const sortedBrands = Object.keys(brandMap).sort();
-
-    // Sort models alphabetically for each brand
-    sortedBrands.forEach((brand) => {
-      brandMap[brand].sort((a, b) => a.model.localeCompare(b.model));
-    });
-
-    // Construct the final sorted map
-    const sortedVehicleBrandMap = sortedBrands.reduce((acc, brand) => {
-      acc[brand] = brandMap[brand];
-      return acc;
-    }, {});
-
-    return sortedVehicleBrandMap;
+    return brandMap;
   }, [vehiclesToShow]);
 
   const { mutateAsync: add } = useAdminCustomPost(

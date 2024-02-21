@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useAdminCustomPost } from "medusa-react";
 import { VehicleDrawer } from "./vehicle-drawer";
 
-export function CreateVehicle() {
+export function CreateVehicle({ refetch }: { refetch: () => void }) {
   const [open, setOpen] = useState(false);
 
   const { mutateAsync, isLoading } = useAdminCustomPost("/admin/vehicles", []);
@@ -16,6 +16,7 @@ export function CreateVehicle() {
 
     try {
       await mutateAsync({ brand, model, year });
+      refetch();
       setOpen(false);
     } catch (error) {
       console.error(error);

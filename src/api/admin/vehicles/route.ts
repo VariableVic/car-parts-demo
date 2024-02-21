@@ -10,6 +10,19 @@ export async function GET(
 
   const vehicles = await vehicleService.list();
 
+  vehicles.sort((a, b) => {
+    const astring = a.brand + a.model;
+    const bstring = b.brand + b.model;
+
+    if (astring < bstring) {
+      return -1;
+    }
+    if (astring > bstring) {
+      return 1;
+    }
+    return 0;
+  });
+
   res.status(200).json({ vehicles });
 }
 
