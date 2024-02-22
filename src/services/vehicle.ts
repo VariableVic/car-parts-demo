@@ -98,8 +98,6 @@ export default class VehicleService {
       where: { product_id: productId },
     });
 
-    console.log(vehicleProds);
-
     const vehicleIds = vehicleProds.map((vp) => vp.vehicle_id);
     return await this.list({ id: vehicleIds });
   }
