@@ -1,9 +1,18 @@
 import { EntityManager, In } from "typeorm";
-import { SharedContext } from "@medusajs/types";
 import { Vehicle } from "../models/vehicle";
+import { VehicleProducts } from "../models/vehicle-products";
+import { buildQuery, FindConfig } from "@medusajs/medusa";
 
 type InjectedDependencies = {
   manager: EntityManager;
+};
+
+export type FilterableVehicleFields = {
+  id?: string | string[];
+  brand?: string | string[];
+  model?: string | string[];
+  year?: number | number[];
+  product_id?: string;
 };
 
 export default class VehicleService {
@@ -13,20 +22,30 @@ export default class VehicleService {
     this.manager = container.manager;
   }
 
-  private getManager(context: SharedContext = {}): EntityManager {
-    return context.transactionManager || this.manager;
-  }
+  async list(
+    filters?: FilterableVehicleFields,
+    config: FindConfig<Vehicle> = {},
+  ): Promise<Vehicle[]> {
+    const vehicleRepo = this.manager.getRepository(Vehicle);
+    const { product_id, ...rest } = filters;
+    const query = buildQuery(rest, config);
 
-  async list(context?: SharedContext): Promise<Vehicle[]> {
-    const vehicleRepo = this.getManager(context).getRepository(Vehicle);
-    return await vehicleRepo.find();
+    if (product_id) {
+      query.where = {
+        ...query.where,
+        products: {
+          product_id: In([product_id]),
+        },
+      };
+    }
+
+    return await vehicleRepo.find(query);
   }
 
   async create(
     data: Partial<Vehicle>,
-    context?: SharedContext
   ): Promise<Vehicle> {
-    const vehicleRepo = this.getManager(context).getRepository(Vehicle);
+    const vehicleRepo = this.manager.getRepository(Vehicle);
     const vehicle = vehicleRepo.create(data);
     return await vehicleRepo.save(vehicle);
   }
@@ -34,9 +53,8 @@ export default class VehicleService {
   async update(
     id: string,
     data: Partial<Vehicle>,
-    context?: SharedContext
   ): Promise<Vehicle> {
-    const vehicleRepo = this.getManager(context).getRepository(Vehicle);
+    const vehicleRepo = this.manager.getRepository(Vehicle);
     const vehicle = await vehicleRepo.findOne({ where: { id } });
 
     if (!vehicle) {
@@ -50,24 +68,63 @@ export default class VehicleService {
     return await vehicleRepo.save(vehicle);
   }
 
-  async delete(id: string, context?: SharedContext): Promise<void> {
-    const vehicleRepo = this.getManager(context).getRepository(Vehicle);
-    await vehicleRepo.delete({ id });
+  async delete(id: string): Promise<void> {
+    const vehicleRepo = this.manager.getRepository(Vehicle);
+    await vehicleRepo.delete(id);
   }
 
-  async findById(
+  async retrieve(
     id: string,
-    context?: SharedContext
   ): Promise<Vehicle | undefined> {
-    const vehicleRepo = this.getManager(context).getRepository(Vehicle);
+    const vehicleRepo = this.manager.getRepository(Vehicle);
     return await vehicleRepo.findOne({ where: { id } });
   }
 
-  async findManyByIds(
-    ids: string[],
-    context?: SharedContext
-  ): Promise<Vehicle[]> {
-    const vehicleRepo = this.getManager(context).getRepository(Vehicle);
-    return await vehicleRepo.findBy({ id: In(ids) });
+  async listProductIds(
+    filters: FilterableVehicleFields,
+  ) {
+    const vehicles = await this.list(filters, {
+      select: ["id"],
+      relations: ["products"],
+    });
+    return vehicles.map((v) => v.products.map((p) => p.product_id)).flat();
+  }
+
+  async listByProductId(
+    productId: string,
+  ) {
+    const vehicleProdRepo = this.manager.getRepository(VehicleProducts);
+    const vehicleProds = await vehicleProdRepo.find({
+      where: { product_id: productId },
+    });
+
+    console.log(vehicleProds);
+
+    const vehicleIds = vehicleProds.map((vp) => vp.vehicle_id);
+    return await this.list({ id: vehicleIds });
+  }
+
+  async addToProduct(
+    vehicleId: string,
+    productId: string,
+  ) {
+    const vehicleProductsRepo = this.manager.getRepository(VehicleProducts);
+    const vehicleProducts = vehicleProductsRepo.create({
+      vehicle_id: vehicleId,
+      product_id: productId,
+    });
+
+    await vehicleProductsRepo.save(vehicleProducts);
+  }
+
+  async removeFromProduct(
+    vehicleId: string,
+    productId: string,
+  ) {
+    const vehicleProductsRepo = this.manager.getRepository(VehicleProducts);
+    await vehicleProductsRepo.delete({
+      vehicle_id: vehicleId,
+      product_id: productId,
+    });
   }
 }

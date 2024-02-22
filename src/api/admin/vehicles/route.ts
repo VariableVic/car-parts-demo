@@ -1,26 +1,20 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/medusa";
 
-import VehicleService from "../../../services/vehicle";
+import VehicleService, {
+  FilterableVehicleFields,
+} from "../../../services/vehicle";
 
 export async function GET(
   req: MedusaRequest,
-  res: MedusaResponse
+  res: MedusaResponse,
 ): Promise<void> {
-  const vehicleService = req.scope.resolve("vehicleService") as VehicleService;
+  const vehicleService = req.scope.resolve<VehicleService>("vehicleService");
 
-  const vehicles = await vehicleService.list();
-
-  vehicles.sort((a, b) => {
-    const astring = a.brand + a.model;
-    const bstring = b.brand + b.model;
-
-    if (astring < bstring) {
-      return -1;
-    }
-    if (astring > bstring) {
-      return 1;
-    }
-    return 0;
+  const selector = {
+    ...req.query,
+  } as FilterableVehicleFields;
+  const vehicles = await vehicleService.list(selector, {
+    order: { brand: "ASC", model: "ASC" },
   });
 
   res.status(200).json({ vehicles });
@@ -28,11 +22,9 @@ export async function GET(
 
 export async function POST(
   req: MedusaRequest,
-  res: MedusaResponse
+  res: MedusaResponse,
 ): Promise<void> {
   const vehicleService = req.scope.resolve("vehicleService") as VehicleService;
-
   const vehicle = await vehicleService.create(req.body);
-
   res.status(201).json({ vehicle });
 }

@@ -3,12 +3,14 @@ import { DeleteVehicle } from "./delete-vehicle";
 import { EditVehicle } from "./edit-vehicle";
 
 export function VehicleList({
+  productId,
   data,
   isLoading,
   refetch,
   page = "settings",
   hasEdit = true,
 }: {
+  productId?: string;
   data: Record<string, any>;
   isLoading: boolean;
   refetch: () => void;
@@ -49,6 +51,7 @@ export function VehicleList({
               )}
               <Table.Cell>
                 <DeleteVehicle
+                  productId={productId}
                   vehicle={vehicle}
                   refetch={refetch}
                   page={page}
