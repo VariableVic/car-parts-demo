@@ -24,7 +24,7 @@ export async function POST(
   req: MedusaRequest,
   res: MedusaResponse,
 ): Promise<void> {
-  const vehicleService = req.scope.resolve("vehicleService") as VehicleService;
+  const vehicleService = req.scope.resolve<VehicleService>("vehicleService");
   const vehicle = await vehicleService.create(req.body);
   res.status(201).json({ vehicle });
 }
