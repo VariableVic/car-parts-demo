@@ -21,7 +21,7 @@ const vehicleProductsMiddleware = async (
 
   req.url = req.url.split("?")[0];
   delete req.query.vehicle_id;
-  req.query = { ...req.query, id: prodIds.length ? prodIds : ["-1"] };
+  req.query = { ...req.query, id: prodIds };
 
   next();
 };
