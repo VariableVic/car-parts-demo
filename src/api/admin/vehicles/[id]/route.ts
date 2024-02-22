@@ -30,8 +30,6 @@ export async function DELETE(
 ): Promise<void> {
   const vehicleService = req.scope.resolve<VehicleService>("vehicleService");
 
-  console.log(req.params.id);
-
   try {
     await vehicleService.delete(req.params.id);
   } catch (e) {
