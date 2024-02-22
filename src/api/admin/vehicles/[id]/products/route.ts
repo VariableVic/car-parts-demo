@@ -1,6 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/medusa";
 import VehicleService from "../../../../../services/vehicle";
 
+// GET /admin/vehicles/:id/products
 export async function GET(
   req: MedusaRequest,
   res: MedusaResponse,
@@ -11,6 +12,7 @@ export async function GET(
   res.status(200).json({ products: vehicleProducts });
 }
 
+// POST /admin/vehicles/:id/products
 export async function POST(
   req: MedusaRequest,
   res: MedusaResponse,
