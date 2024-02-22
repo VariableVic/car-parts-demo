@@ -1,4 +1,4 @@
-import { Drawer, Button, Label, Input } from "@medusajs/ui";
+import { Button, Drawer, Input, Label } from "@medusajs/ui";
 import { Vehicle } from "src/models/vehicle";
 
 export function VehicleDrawer({
@@ -11,7 +11,7 @@ export function VehicleDrawer({
   handleSubmit,
   vehicle,
 }: {
-  label: string;
+  label: string | JSX.Element;
   title: string;
   type: "primary" | "secondary" | "transparent" | "danger";
   open: boolean;

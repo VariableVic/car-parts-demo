@@ -19,7 +19,7 @@ const ProductVehicleEditor = (props: InjectedProps) => {
     data: linkedVehiclesData,
     refetch: refetchLinkedVehicles,
     isLoading,
-  } = useAdminCustomQuery(`/admin/product-vehicles/${product.id}`, []);
+  } = useAdminCustomQuery(`/admin/vehicles?product_id=${product.id}`, []);
 
   const vehicles = vehiclesData?.vehicles as Vehicle[];
   const linkedVehicles = linkedVehiclesData?.vehicles as Vehicle[];
@@ -29,30 +29,30 @@ const ProductVehicleEditor = (props: InjectedProps) => {
       title="Link product to vehicles"
       description={`Use the dropdown to link ${product.title} to one or more vehicles.`}
     >
-      {vehicles && vehicles.length > 0 && linkedVehicles ? (
-        <VehicleSelect
-          vehicles={vehicles}
-          productId={product.id}
-          linkedVehicles={linkedVehicles}
-          refetchLinkedVehicles={refetchLinkedVehicles}
-        />
-      ) : (
-        <p>Loading vehicles...</p>
-      )}
-
-      <div className="mb-6">
-        {linkedVehicles && linkedVehicles.length > 0 ? (
-          <VehicleList
-            data={linkedVehiclesData}
-            refetch={refetchLinkedVehicles}
-            isLoading={isLoading}
-            hasEdit={false}
-            page="products"
-          />
-        ) : (
-          <p>No vehicles linked.</p>
-        )}
+      <div className="my-6">
+        {linkedVehicles && linkedVehicles.length > 0
+          ? (
+            <VehicleList
+              productId={product.id}
+              data={linkedVehiclesData}
+              refetch={refetchLinkedVehicles}
+              isLoading={isLoading}
+              hasEdit={false}
+              page="products"
+            />
+          )
+          : <p>No vehicles linked.</p>}
       </div>
+      {vehicles && vehicles.length > 0 && linkedVehicles
+        ? (
+          <VehicleSelect
+            vehicles={vehicles}
+            productId={product.id}
+            linkedVehicles={linkedVehicles}
+            refetchLinkedVehicles={refetchLinkedVehicles}
+          />
+        )
+        : <p>Loading vehicles...</p>}
     </Container>
   );
 };

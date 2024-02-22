@@ -1,26 +1,26 @@
 import { Button } from "@medusajs/ui";
+import { Trash } from "@medusajs/icons";
 import { useAdminCustomDelete } from "medusa-react";
 
 import { VehicleDTO } from "src/types/vehicle";
 
 export function DeleteVehicle({
+  productId,
   page = "settings",
   vehicle,
   refetch,
 }: {
+  productId?: string;
   page: "settings" | "products";
   vehicle: VehicleDTO;
   refetch: () => void;
 }) {
-  const endpoint =
-    page === "settings" ? "/admin/vehicles" : "/admin/vehicle-products";
+  let endpoint = `/admin/vehicles/${vehicle.id}`;
+  if (page === "products") {
+    endpoint += `/products/${productId}`;
+  }
 
-  const id = page === "settings" ? vehicle.id : vehicle.vehicle_product_id;
-
-  const { mutateAsync: remove, isLoading } = useAdminCustomDelete(
-    `${endpoint}/${id}`,
-    []
-  );
+  const { mutateAsync: remove, isLoading } = useAdminCustomDelete(endpoint, []);
 
   const deleteVehicle = async () => {
     await remove().then(() => {
@@ -29,8 +29,13 @@ export function DeleteVehicle({
   };
 
   return (
-    <Button onClick={deleteVehicle} isLoading={isLoading} variant="danger">
-      Delete
+    <Button
+      size="small"
+      onClick={deleteVehicle}
+      isLoading={isLoading}
+      variant="transparent"
+    >
+      <Trash />
     </Button>
   );
 }

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { PencilSquare } from "@medusajs/icons";
+import { useAdminCustomPost } from "medusa-react";
 import { VehicleDrawer } from "./vehicle-drawer";
 import { Vehicle } from "../../../models/vehicle";
-import { VehicleDTO } from "../../../types/vehicle";
 
 export function EditVehicle({
   vehicle,
@@ -11,20 +12,11 @@ export function EditVehicle({
   refetch: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const updateVehicle = async (vehicle: VehicleDTO) => {
-    setIsLoading(true);
-    await fetch(`${process.env.BASE_URL}/admin/vehicles/${vehicle.id}`, {
-      credentials: "include",
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(vehicle),
-    }).then(() => refetch());
-    setIsLoading(false);
-  };
+  const { mutateAsync: update, isLoading } = useAdminCustomPost(
+    `/admin/vehicles/${vehicle.id}`,
+    [],
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,7 +26,9 @@ export function EditVehicle({
     const year = data.get("year") as unknown as number;
 
     try {
-      await updateVehicle({ ...vehicle, brand, model, year });
+      await update({ ...vehicle, brand, model, year }).then(() => {
+        refetch();
+      });
       setOpen(false);
     } catch (error) {
       console.error(error);
@@ -43,9 +37,9 @@ export function EditVehicle({
 
   return (
     <VehicleDrawer
-      label="Edit"
+      label={<PencilSquare />}
       title="Edit Vehicle"
-      type="secondary"
+      type="transparent"
       open={open}
       setOpen={setOpen}
       isLoading={isLoading}

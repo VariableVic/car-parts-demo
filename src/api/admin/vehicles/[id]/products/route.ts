@@ -1,25 +1,23 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/medusa";
-
-import VehicleService from "../../../services/vehicle";
+import VehicleService from "../../../../../services/vehicle";
 
 export async function GET(
   req: MedusaRequest,
   res: MedusaResponse,
 ): Promise<void> {
+  const { id } = req.params;
   const vehicleService = req.scope.resolve<VehicleService>("vehicleService");
-
-  const vehicles = await vehicleService.list(req.query, {
-    order: { brand: "ASC", model: "ASC" },
-  });
-
-  res.status(200).json({ vehicles });
+  const vehicleProducts = await vehicleService.listProductIds({ id });
+  res.status(200).json({ products: vehicleProducts });
 }
 
 export async function POST(
   req: MedusaRequest,
   res: MedusaResponse,
 ): Promise<void> {
+  const { id } = req.params;
+  const { product_id } = req.body;
   const vehicleService = req.scope.resolve<VehicleService>("vehicleService");
-  const vehicle = await vehicleService.create(req.body);
-  res.status(201).json({ vehicle });
+  await vehicleService.addToProduct(id, product_id);
+  res.status(201).json({ message: "Vehicle product created" });
 }

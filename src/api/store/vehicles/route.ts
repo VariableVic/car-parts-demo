@@ -4,23 +4,12 @@ import VehicleService from "../../../services/vehicle";
 
 export async function GET(
   req: MedusaRequest,
-  res: MedusaResponse
+  res: MedusaResponse,
 ): Promise<void> {
   const vehicleService = req.scope.resolve("vehicleService") as VehicleService;
 
-  const vehicles = await vehicleService.list();
-
-  vehicles.sort((a, b) => {
-    const astring = a.brand + a.model;
-    const bstring = b.brand + b.model;
-
-    if (astring < bstring) {
-      return -1;
-    }
-    if (astring > bstring) {
-      return 1;
-    }
-    return 0;
+  const vehicles = await vehicleService.list({}, {
+    order: { brand: "ASC", model: "ASC" },
   });
 
   res.status(200).json({ vehicles });

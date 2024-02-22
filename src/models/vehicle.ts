@@ -1,5 +1,6 @@
 import { BaseEntity, generateEntityId } from "@medusajs/medusa";
-import { BeforeInsert, Column, Entity } from "typeorm";
+import { BeforeInsert, Column, Entity, OneToMany } from "typeorm";
+import { VehicleProducts } from "./vehicle-products";
 
 @Entity()
 export class Vehicle extends BaseEntity {
@@ -11,6 +12,9 @@ export class Vehicle extends BaseEntity {
 
   @Column()
   year: number;
+
+  @OneToMany(() => VehicleProducts, (vp) => vp.vehicle)
+  products: VehicleProducts[];
 
   @BeforeInsert()
   private beforeInsert(): void {
