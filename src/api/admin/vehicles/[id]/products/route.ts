@@ -17,15 +17,7 @@ export async function POST(
 ): Promise<void> {
   const { id } = req.params;
   const { product_id } = req.body;
-
   const vehicleService = req.scope.resolve<VehicleService>("vehicleService");
-
-  try {
-    console.log(id, product_id);
-    await vehicleService.addToProduct(id, product_id);
-    res.status(201).json({ message: "Vehicle product created" });
-  } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: "Vehicle product not created" });
-  }
+  await vehicleService.addToProduct(id, product_id);
+  res.status(201).json({ message: "Vehicle product created" });
 }

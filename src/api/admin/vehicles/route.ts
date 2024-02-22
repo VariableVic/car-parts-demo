@@ -1,8 +1,6 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/medusa";
 
-import VehicleService, {
-  FilterableVehicleFields,
-} from "../../../services/vehicle";
+import VehicleService from "../../../services/vehicle";
 
 export async function GET(
   req: MedusaRequest,
@@ -10,10 +8,7 @@ export async function GET(
 ): Promise<void> {
   const vehicleService = req.scope.resolve<VehicleService>("vehicleService");
 
-  const selector = {
-    ...req.query,
-  } as FilterableVehicleFields;
-  const vehicles = await vehicleService.list(selector, {
+  const vehicles = await vehicleService.list(req.query, {
     order: { brand: "ASC", model: "ASC" },
   });
 
