@@ -7,14 +7,6 @@ type InjectedDependencies = {
   manager: EntityManager;
 };
 
-export type FilterableVehicleFields = {
-  id?: string | string[];
-  brand?: string | string[];
-  model?: string | string[];
-  year?: number | number[];
-  product_id?: string;
-};
-
 export default class VehicleService {
   private manager: EntityManager;
 
@@ -114,3 +106,11 @@ export default class VehicleService {
     });
   }
 }
+
+export type FilterableVehicleFields = {
+  id?: string | string[];
+  brand?: string | string[];
+  model?: string | string[];
+  year?: number | number[];
+  product_id?: string;
+};
