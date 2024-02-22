@@ -1,6 +1,7 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/medusa";
 import VehicleService from "../../../../../../services/vehicle";
 
+// DELETE /admin/vehicles/:id/products/:product_id
 export async function DELETE(
   req: MedusaRequest,
   res: MedusaResponse,

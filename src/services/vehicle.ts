@@ -90,18 +90,6 @@ export default class VehicleService {
     return vehicles.map((v) => v.products.map((p) => p.product_id)).flat();
   }
 
-  async listByProductId(
-    productId: string,
-  ) {
-    const vehicleProdRepo = this.manager.getRepository(VehicleProducts);
-    const vehicleProds = await vehicleProdRepo.find({
-      where: { product_id: productId },
-    });
-
-    const vehicleIds = vehicleProds.map((vp) => vp.vehicle_id);
-    return await this.list({ id: vehicleIds });
-  }
-
   async addToProduct(
     vehicleId: string,
     productId: string,
